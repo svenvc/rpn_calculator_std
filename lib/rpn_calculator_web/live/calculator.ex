@@ -334,7 +334,7 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
   end
 
   attr :key, :string, required: true
-  attr :color, :string, default: "btn-primary"
+  attr :color, :string, default: "btn-neutral"
   attr :keyboard, :string
   slot :inner_block
 
