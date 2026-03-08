@@ -11,7 +11,12 @@ defmodule RPNCalculator.MixProject do
       aliases: aliases(),
       deps: deps(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      releases: [
+        rpn_calculator_std: [
+          include_executables_for: [:unix]
+        ]
+      ]
     ]
   end
 
