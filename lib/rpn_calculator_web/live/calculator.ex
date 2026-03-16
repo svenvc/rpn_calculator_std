@@ -8,7 +8,13 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <div id="calculator" phx-window-keyup="calc-keyup" class="grid place-content-center">
+      <div
+        id="calculator"
+        phx-window-keyup="calc-keyup"
+        class="grid place-content-center"
+        phx-hook=".AnimateButton"
+      >
+        <.animate_button_colocated_hook />
         <div id="display" class="mb-2">
           <.calc_display soft>{render_stack_at(@rpn_calculator, 3)}</.calc_display>
           <.calc_display soft>{render_stack_at(@rpn_calculator, 2)}</.calc_display>
@@ -297,7 +303,6 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
       class={"btn active:bg-accent #{@width} btn-active #{@color}"}
       phx-click="calc-button"
       phx-value-key={@key}
-      data-js-do={animate_click("#button-#{@key}")}
     >
       {render_slot(@inner_block) || @key}
     </.button>
@@ -356,6 +361,24 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
     """
   end
 
+  defp animate_button_colocated_hook(assigns) do
+    ~H"""
+    <script :type={Phoenix.LiveView.ColocatedHook} name=".AnimateButton">
+      export default {
+        mounted() {
+          window.addEventListener("phx:animate-button", (e) => {
+            let button = document.getElementById(e.detail.id);
+            if (button) {
+              button.classList.replace("btn-active", "btn-soft")
+              setTimeout(() => { button.classList.replace("btn-soft", "btn-active") }, 150)
+            }
+          })
+        }
+      }
+    </script>
+    """
+  end
+
   defp render_main_display(%RPNCalculator{} = rpn_calculator) do
     case rpn_calculator.input_digits do
       "" -> RPNCalculator.top_of_stack(rpn_calculator) |> RPNCalculator.render_number()
@@ -376,14 +399,6 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
       rpn_calculator |> Map.take([:rpn_stack, :input_digits, :computed?]),
       pretty: true,
       charlists: :as_lists
-    )
-  end
-
-  defp animate_click(button_id) do
-    JS.transition(
-      {"ease-out duration-200", "opacity-0", "opacity-100"},
-      time: 200,
-      to: button_id
     )
   end
 
@@ -423,7 +438,7 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
       {:noreply,
        socket
        |> process_key(translated_key)
-       |> push_event("js-do", %{id: "button-#{translated_key}"})}
+       |> push_event("animate-button", %{id: "button-#{translated_key}"})}
     else
       {:noreply, socket}
     end
