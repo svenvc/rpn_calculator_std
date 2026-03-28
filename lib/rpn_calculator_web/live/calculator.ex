@@ -215,7 +215,7 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
             <.help_row key="Enter" color="btn-error" keyboard="Enter">
               ENTER
             </.help_row>
-            <.help_row key="Clear" color="btn-success" keyboard="c">
+            <.help_row key="Clear" color="btn-success" keyboard="c;Escape">
               CLEAR
             </.help_row>
             <.help_row key="Backspace" color="btn-success" keyboard="Backspace">
@@ -236,13 +236,13 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
             <.help_row key="Sign" keyboard="s">
               + / -
             </.help_row>
-            <.help_row key="Dot" keyboard=".">
+            <.help_row key="Dot" keyboard=".;,">
               &period;
             </.help_row>
             <.help_row :if={!@basic_style?} key="EE" keyboard="e">
               EE
             </.help_row>
-            <.help_row :for={number <- 0..9} key={number}>
+            <.help_row :for={number <- 0..9} key={to_string(number)}>
               {number}
             </.help_row>
           </tbody>
@@ -359,8 +359,12 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
       </td>
       <td class="py-2">{@key}</td>
       <td class="py-2">
-        <.button variant="primary" class="btn m-1 btn-outline">
-          {Map.get(assigns, :keyboard, @key)}
+        <.button
+          :for={key <- Map.get(assigns, :keyboard, @key) |> String.split(";")}
+          variant="primary"
+          class="btn m-1 btn-outline"
+        >
+          {key}
         </.button>
       </td>
     </tr>
@@ -470,7 +474,9 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
     "/" => "Divide",
     "s" => "Sign",
     "c" => "Clear",
+    "Escape" => "Clear",
     "." => "Dot",
+    "," => "Dot",
     "~" => "XY",
     "ArrowDown" => "RollDown",
     "ArrowUp" => "RollUp",

@@ -311,6 +311,8 @@ defmodule RPNCalculator.RPNCalculator do
     rpn_calculator
     |> update_rpn_stack(fn
       [0] -> [number]
+      [+0.0] -> [number]
+      [-0.0] -> [number]
       rpn_stack -> [number | rpn_stack]
     end)
   end
