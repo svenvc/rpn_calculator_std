@@ -15,7 +15,13 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
         phx-hook=".AnimateButton"
       >
         <.animate_button_colocated_hook />
-        <div id="display" class="mb-2">
+        <div
+          id="display"
+          class="mb-2"
+          data-x={render_main_display(@rpn_calculator)}
+          phx-hook=".CopyPaste"
+        >
+          <.copy_paste_colocated_hook />
           <.calc_display soft>{render_stack_at(@rpn_calculator, 3)}</.calc_display>
           <.calc_display soft>{render_stack_at(@rpn_calculator, 2)}</.calc_display>
           <.calc_display soft>{render_stack_at(@rpn_calculator, 1)}</.calc_display>
@@ -379,6 +385,49 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
     """
   end
 
+  defp copy_paste_colocated_hook(assigns) do
+    ~H"""
+    <script :type={Phoenix.LiveView.ColocatedHook} name=".CopyPaste">
+      export default {
+        mounted() {
+          const copy = async () => {
+            try {
+              const text = document.getElementById("display").getAttribute("data-x");
+              console.log("Copy", text);
+              await navigator.clipboard.writeText(text);
+            } catch (err) {
+              console.warn("Copy failed", err);
+            }
+          };
+
+          const paste = async () => {
+            try {
+              const text = await navigator.clipboard.readText();
+              console.log("Paste", text);
+              this.pushEvent("paste", {text: text});
+            } catch (err) {
+              console.warn("Paste failed", err);
+            }
+          };
+
+          document.addEventListener("keydown", (e) => {
+            if (e.metaKey || e.ctrlKey) {
+              if (e.key.toLowerCase() === "c") {
+                copy()
+                e.preventDefault();
+              }
+              if (e.key.toLowerCase() === "v") {
+                paste()
+                e.preventDefault();
+              }
+            }
+          })
+        }
+      }
+    </script>
+    """
+  end
+
   defp render_main_display(%RPNCalculator{} = rpn_calculator) do
     case rpn_calculator.input_digits do
       "" -> RPNCalculator.top_of_stack(rpn_calculator) |> RPNCalculator.render_number()
@@ -454,6 +503,23 @@ defmodule RPNCalculatorWeb.CalculatorLive.Calculator do
   def handle_event("calc-button", %{"key" => key}, socket) do
     Logger.debug("button: #{key}")
     {:noreply, socket |> process_key(key)}
+  end
+
+  @impl true
+  def handle_event("paste", %{"text" => text}, socket) do
+    Logger.debug("paste #{text}")
+
+    try do
+      number =
+        if String.contains?(text, [".", "e"]),
+          do: String.to_float(text),
+          else: String.to_integer(text)
+
+      rpn_calculator = socket.assigns.rpn_calculator |> RPNCalculator.push(number)
+      {:noreply, socket |> assign(rpn_calculator: rpn_calculator)}
+    rescue
+      _e -> {:noreply, socket |> assign(error_msg: "Paste failed, not a number")}
+    end
   end
 
   defp process_key(socket, key) do
