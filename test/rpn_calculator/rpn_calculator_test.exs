@@ -99,4 +99,10 @@ defmodule RPNCalculator.RPNCalculatorTest do
 
     assert RPNCalculator.top_of_stack(rpn_calculator) == 9
   end
+
+  test "push to top of stack" do
+    rpn_calculator = %RPNCalculator{}
+    rpn_calculator = rpn_calculator |> RPNCalculator.push(123_456)
+    assert RPNCalculator.top_of_stack(rpn_calculator) == 123_456
+  end
 end

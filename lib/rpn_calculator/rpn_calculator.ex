@@ -206,19 +206,11 @@ defmodule RPNCalculator.RPNCalculator do
   end
 
   def process_key(%__MODULE__{} = rpn_calculator, "Pi") do
-    rpn_calculator
-    |> update_rpn_stack(fn
-      [0] -> [:math.pi()]
-      rpn_stack -> [:math.pi() | rpn_stack]
-    end)
+    rpn_calculator |> push(:math.pi())
   end
 
   def process_key(%__MODULE__{} = rpn_calculator, "E") do
-    rpn_calculator
-    |> update_rpn_stack(fn
-      [0] -> [:math.exp(1)]
-      rpn_stack -> [:math.exp(1) | rpn_stack]
-    end)
+    rpn_calculator |> push(:math.exp(1))
   end
 
   def process_key(%__MODULE__{} = rpn_calculator, "Reciprocal") do
@@ -310,6 +302,16 @@ defmodule RPNCalculator.RPNCalculator do
     |> update_rpn_stack(fn
       [top] -> [top]
       [_top | tail] -> tail
+    end)
+  end
+
+  @doc "Push a number on the stack, making it the top of the stack"
+
+  def push(%__MODULE__{} = rpn_calculator, number) when is_number(number) do
+    rpn_calculator
+    |> update_rpn_stack(fn
+      [0] -> [number]
+      rpn_stack -> [number | rpn_stack]
     end)
   end
 
