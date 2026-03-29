@@ -1,0 +1,15 @@
+[Unit]
+Description=RPN Calculator Std Podman Container
+
+[Container]
+Image=docker.io/svenvc/rpn_calculator_std:v3
+ContainerName=rpn_calculator_std
+PublishPort=6000:4000
+Environment=SECRET_KEY_BASE=<generated-secret>
+Environment=PHX_HOST=<your-hostname>
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
