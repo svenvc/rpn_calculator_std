@@ -300,7 +300,7 @@ defmodule RPNCalculator.RPNCalculator do
   def process_key(%__MODULE__{} = rpn_calculator, "Drop") do
     rpn_calculator
     |> update_rpn_stack(fn
-      [top] -> [top]
+      [_top] -> [0]
       [_top | tail] -> tail
     end)
   end
