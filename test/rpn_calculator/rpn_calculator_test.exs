@@ -105,4 +105,11 @@ defmodule RPNCalculator.RPNCalculatorTest do
     rpn_calculator = rpn_calculator |> RPNCalculator.push(123_456)
     assert RPNCalculator.top_of_stack(rpn_calculator) == 123_456
   end
+
+  test "drop clears top of stack" do
+    rpn_calculator = %RPNCalculator{}
+    rpn_calculator = rpn_calculator |> RPNCalculator.push(42)
+    rpn_calculator = rpn_calculator |> RPNCalculator.process_key("Drop")
+    assert RPNCalculator.top_of_stack(rpn_calculator) == 0
+  end
 end
