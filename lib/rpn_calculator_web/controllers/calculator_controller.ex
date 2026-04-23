@@ -15,7 +15,7 @@ defmodule RPNCalculatorWeb.CalculatorController do
       when is_binary(key) do
     try do
       state = to_rpn_calculator(params)
-      IO.puts("/process-key/#{key} - #{inspect(state)}")
+      # IO.puts("/process-key/#{key} - #{inspect(state)}")
       state = state |> RPNCalculator.process_key(key)
       conn |> json(to_map(state))
     rescue
@@ -28,7 +28,7 @@ defmodule RPNCalculatorWeb.CalculatorController do
     try do
       state = to_rpn_calculator(params)
       number = RPNCalculator.parse_input(number)
-      IO.puts("/push/#{number} - #{inspect(state)}")
+      # IO.puts("/push/#{number} - #{inspect(state)}")
       state = state |> RPNCalculator.push(number)
       conn |> json(to_map(state))
     rescue
