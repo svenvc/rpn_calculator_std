@@ -17,14 +17,17 @@ defmodule RPNCalculatorWeb.Router do
   scope "/", RPNCalculatorWeb do
     pipe_through :browser
 
-    # get "/", PageController, :home
     live "/", CalculatorLive.Calculator
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", RPNCalculatorWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", RPNCalculatorWeb do
+    pipe_through :api
+
+    get "/new", CalculatorController, :new
+    get "/known-keys", CalculatorController, :known_keys
+    post "/process-key/:key", CalculatorController, :process_key
+    post "/push/:number", CalculatorController, :push
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:rpn_calculator, :dev_routes) do
