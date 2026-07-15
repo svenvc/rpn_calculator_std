@@ -4,7 +4,7 @@ defmodule RPNCalculator.MixProject do
   def project do
     [
       app: :rpn_calculator,
-      version: "0.1.4",
+      version: "0.1.5",
       elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
