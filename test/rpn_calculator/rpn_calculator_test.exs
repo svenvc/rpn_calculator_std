@@ -52,6 +52,46 @@ defmodule RPNCalculator.RPNCalculatorTest do
     assert RPNCalculator.top_of_stack(rpn_calculator) == -15.55e-32
   end
 
+  test "input editing stack lift" do
+    rpn_calculator =
+      %RPNCalculator{}
+      |> RPNCalculator.process_keys([
+        "1",
+        "Enter",
+        "Add",
+        "1",
+        "Add",
+        "5",
+        "Enter",
+        "2",
+        "Add",
+        "Add"
+      ])
+
+    assert RPNCalculator.top_of_stack(rpn_calculator) == 10
+  end
+
+  test "input editing stack lift dot first" do
+    rpn_calculator =
+      %RPNCalculator{}
+      |> RPNCalculator.process_keys([
+        "1",
+        "Enter",
+        "Add",
+        "Dot",
+        "5",
+        "Add",
+        "2",
+        "Enter",
+        "Dot",
+        "5",
+        "Add",
+        "Add"
+      ])
+
+    assert RPNCalculator.top_of_stack(rpn_calculator) == 5.0
+  end
+
   test "xy swap" do
     rpn_calculator =
       %RPNCalculator{}

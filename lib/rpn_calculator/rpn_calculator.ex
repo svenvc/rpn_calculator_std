@@ -39,16 +39,8 @@ defmodule RPNCalculator.RPNCalculator do
 
   def process_key(%__MODULE__{} = rpn_calculator, key)
       when key in ~w(0 1 2 3 4 5 6 7 8 9) do
-    if rpn_calculator.input_digits == "" and rpn_calculator.computed? do
-      # stack lift or auto enter when entering a new number after a computation
-      rpn_calculator
-      |> update_rpn_stack(
-        fn [top | tail] -> [0 | [top | tail]] end,
-        clear_input: false
-      )
-    else
-      rpn_calculator
-    end
+    rpn_calculator
+    |> maybe_stack_lift()
     |> update_input_digits(fn input_digits ->
       cond do
         input_digits == "0" -> key
@@ -62,6 +54,7 @@ defmodule RPNCalculator.RPNCalculator do
 
   def process_key(%__MODULE__{} = rpn_calculator, "Dot") do
     rpn_calculator
+    |> maybe_stack_lift()
     |> update_input_digits(fn input_digits ->
       cond do
         String.contains?(input_digits, ".") -> input_digits
@@ -405,6 +398,20 @@ defmodule RPNCalculator.RPNCalculator do
     rpn_calculator
     |> update_input_digits(fn _ -> "" end)
     |> update_computed?(true)
+  end
+
+  @doc "Do a stack lift or auto enter when starting a new number after a computation"
+
+  def maybe_stack_lift(%__MODULE__{} = rpn_calculator) do
+    if rpn_calculator.input_digits == "" and rpn_calculator.computed? do
+      rpn_calculator
+      |> update_rpn_stack(
+        fn [top | tail] -> [0 | [top | tail]] end,
+        clear_input: false
+      )
+    else
+      rpn_calculator
+    end
   end
 
   @doc "Convert a string with input into a number, float or integer"
