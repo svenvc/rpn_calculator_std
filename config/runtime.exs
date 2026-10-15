@@ -28,18 +28,15 @@ if config_env() == :prod do
   # variable instead.
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
-      raise """
-      environment variable SECRET_KEY_BASE is missing.
-      You can generate one by calling: mix phx.gen.secret
-      """
+      "lhn+mhcWUKL5NN+qKaFDbvG6W1P0/GdnmE8WxdICu/53NEJHRMwthoC+4E2bYC4m"
 
-  host = System.get_env("PHX_HOST") || "example.com"
+  host = System.get_env("PHX_HOST") || "localhost"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :rpn_calculator, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :rpn_calculator, RPNCalculatorWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
+    url: [host: host, port: port, scheme: "http"],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
