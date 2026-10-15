@@ -40,3 +40,44 @@ $ systemctl --user stop rpn_calculator_std.service
 ```
 
 This setup should survive system restarts.
+
+# OCI container image management
+
+## build image in source dir
+
+podman build -t rpn_calculator_std .
+
+## run in dev mode
+
+podman run -d --name rpn_calculator_std -p 4000:4000 localhost/rpn_calculator_std
+
+## run in production
+
+systemctl --user status rpn_calculator_std_podman
+systemctl --user restart rpn_calculator_std_podman
+
+## tag/push on ubuntu
+
+podman tag localhost/rpn_calculator_std:latest docker.io/svenvc/rpn_calculator_std:v6-amd64
+
+podman push docker.io/svenvc/rpn_calculator_std:v6-amd64
+
+## tag/push on mac
+
+podman tag localhost/rpn_calculator_std:latest docker.io/svenvc/rpn_calculator_std:v6-arm64
+
+podman push docker.io/svenvc/rpn_calculator_std:v6-amd64
+
+## create/push manifest
+
+podman manifest rm rpn_calculator_std:latest-manifest
+
+podman manifest create rpn_calculator_std:latest-manifest
+
+podman manifest add rpn_calculator_std:latest-manifest docker://docker.io/svenvc/rpn_calculator_std:v6-amd64
+
+podman manifest add rpn_calculator_std:latest-manifest docker://docker.io/svenvc/rpn_calculator_std:v6-arm64
+
+podman manifest push --all rpn_calculator_std:latest-manifest docker://docker.io/svenvc/rpn_calculator_std:v6
+
+podman manifest push --all rpn_calculator_std:latest-manifest docker://docker.io/svenvc/rpn_calculator_std:latest
