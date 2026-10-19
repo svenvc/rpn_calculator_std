@@ -18,6 +18,8 @@ defmodule RPNCalculatorWeb.Router do
     pipe_through :browser
 
     live "/", CalculatorLive.Calculator
+
+    get "/up", UpController, :check
   end
 
   scope "/api", RPNCalculatorWeb do
